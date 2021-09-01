@@ -1,0 +1,34 @@
+Selinux: Permissive Mode
+
+# Disable Swap
+## Comment out swap mount point
+vim /etc/fstab
+swapoff -a
+
+# Firewall entry against specific port for kubernetes requirement
+firewall-cmd --permanent --add-port=6443/tcp
+firewall-cmd --permanent --add-port=2379-2380/tcp
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10251/tcp
+firewall-cmd --permanent --add-port=10252/tcp
+firewall-cmd --permanent --add-port=10255/tcp 
+
+#Also opne dynaic ports 30000 to 32767 for "NodePort" access.
+firewall-cmd --permanent --add-port=30000-32767/tcp
+firewall-cmd --zone=trusted --permanent --add-source=192.168.0.0/24
+firewall-cmd --add-masquerade --permanent
+  
+
+modprobe br_netfilter
+systemctl restart firewalld
+
+
+# Docker Installation
+sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf install docker-ce --nobest -y --allowerasing
+
+#Start and enable the Docker daemon
+sudo systemctl enable --now docker
+
+#Add current user to the docker group
+sudo usermod -aG docker $USER
