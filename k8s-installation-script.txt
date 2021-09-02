@@ -1,4 +1,5 @@
-Selinux: Permissive Mode
+#Selinux: Permissive Mode
+sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
 # Disable Swap
 ## Comment out swap mount point
@@ -32,3 +33,56 @@ sudo systemctl enable --now docker
 
 #Add current user to the docker group
 sudo usermod -aG docker $USER
+
+# To check docker is properly installed 
+docker --version
+
+# To add kubernetes repo file 
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+	[kubernetes]
+	name=Kubernetes
+	baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+	enabled=1
+	gpgcheck=1
+	repo_gpgcheck=1
+	gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+#Install Kubernetes pkgs
+sudo dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+#Modify kubelet file
+sudo vim /etc/sysconfig/kubelet
+KUBELET_EXTRA_ARGS= --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice
+
+#Enable kubelet service
+sudo systemctl enable --now kubelet
+
+
+# Set iptables bridging
+cat <<EOF >  /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+#Load the new configuration
+sysctl --system
+
+#Create a docker Daemon File  
+  cat <<EOF > /etc/docker/daemon.json
+  {
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+      "max-size": "100m"
+    },
+    "storage-driver": "overlay2",
+    "storage-opts": [
+      "overlay2.override_kernel_check=true"
+    ]
+  }   
+EOF
+
+mkdir -p /etc/systemd/system/docker.service.d
+systemctl daemon-reload
+systemctl restart docker
