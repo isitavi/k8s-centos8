@@ -1,3 +1,5 @@
+#Run all those below commands to all the Nodes and use Static IP for kubernetes lab environment
+
 #Selinux: Permissive Mode
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
@@ -86,3 +88,21 @@ EOF
 mkdir -p /etc/systemd/system/docker.service.d
 systemctl daemon-reload
 systemctl restart docker
+
+
+#Run kubeadm init command only on your Master Node (Not in Worker Node)
+sudo kubeadm init 
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml 
+
+#Do the following on all your worker node:
+scp -r $HOME/.kube test-lab@192.168.56.11:/home/test-lab
+
+
+#This is the token for my cluster (Don't copy paste same token to your worker environment)
+kubeadm join 192.168.1.87:6443 --token 6w9g21.8l2k2eksqoe045k5 \
+	--discovery-token-ca-cert-hash sha256:5959febb6268f0e24a9a84e5d1d109a073acd35d5844bd242927bc3102aa75ad
