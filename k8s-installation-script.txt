@@ -105,3 +105,11 @@ scp -r $HOME/.kube test-lab@192.168.56.11:/home/test-lab
 
 #This is the token for my cluster (Don't copy paste same token to your worker environment)
 kubeadm join 192.168.1.205:6443 --token nulmwg.86jbf8mpd3ljbtza --discovery-token-ca-cert-hash sha256:16047aa0f24571dd2de77ceffc9fcfe9d042bea2baedb79d83b1e494b8ddfa97
+
+
+#Enable kubectl autocompletion
+#Run this command to specific user (means if you dont use root user for k8s cluster then use, that particular user for k8s cluster)
+echo 'source <(kubectl completion bash)' >>~/.bashrc
+
+#Run this command as root user
+kubectl completion bash >/etc/bash_completion.d/kubectl 
