@@ -91,7 +91,7 @@ systemctl restart docker
 
 
 #Run kubeadm init command only on your Master Node (Not in Worker Node)
-sudo kubeadm init 
+sudo kubeadm init --apiserver-advertise-address=192.168.56.10
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -104,5 +104,5 @@ scp -r $HOME/.kube test-lab@192.168.56.11:/home/test-lab
 
 
 #This is the token for my cluster (Don't copy paste same token to your worker environment)
-kubeadm join 192.168.1.87:6443 --token 6w9g21.8l2k2eksqoe045k5 \
-	--discovery-token-ca-cert-hash sha256:5959febb6268f0e24a9a84e5d1d109a073acd35d5844bd242927bc3102aa75ad
+kubeadm join 192.168.56.10:6443 --token t0q5dr.oq7prspv5n6bb7z5 \
+	--discovery-token-ca-cert-hash sha256:953707dbe96c985a9e61a7b9c26510e41952378588232977fead066f0f56a3b9
