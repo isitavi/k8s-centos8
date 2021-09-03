@@ -91,7 +91,7 @@ systemctl restart docker
 
 
 #Run kubeadm init command only on your Master Node (Not in Worker Node)
-sudo kubeadm init --apiserver-advertise-address=192.168.56.10
+sudo kubeadm init 
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
