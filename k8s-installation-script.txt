@@ -104,5 +104,4 @@ scp -r $HOME/.kube test-lab@192.168.56.11:/home/test-lab
 
 
 #This is the token for my cluster (Don't copy paste same token to your worker environment)
-kubeadm join 192.168.56.10:6443 --token t0q5dr.oq7prspv5n6bb7z5 \
-	--discovery-token-ca-cert-hash sha256:953707dbe96c985a9e61a7b9c26510e41952378588232977fead066f0f56a3b9
+kubeadm join 192.168.1.205:6443 --token nulmwg.86jbf8mpd3ljbtza --discovery-token-ca-cert-hash sha256:16047aa0f24571dd2de77ceffc9fcfe9d042bea2baedb79d83b1e494b8ddfa97
